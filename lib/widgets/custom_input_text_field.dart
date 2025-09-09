@@ -16,7 +16,7 @@ class CustomInputTextField extends StatelessWidget {
   final Icon? suffixIcon;
   final String hintText;
   final String labelText;
-  final String? validationError;
+  final String? Function(String?)? validationError;
   final IconButton? suffixTconButton;
   final bool? obscureTextValue;
   final TextInputType? keyboardType;
@@ -64,12 +64,13 @@ class CustomInputTextField extends StatelessWidget {
           borderSide: BorderSide(color: Colors.red, width: 2),
         ),
       ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return validationError;
-        }
-        return null;
-      },
+      validator: validationError,
+      // validator: (value) {
+      //   if (value == null || value.isEmpty) {
+      //     return validationError;
+      //   }
+      //   return null;
+      // },
     );
   }
 }

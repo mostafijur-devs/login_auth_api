@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:login_auth_model/model/auth/registration_auth_model/registration_model.dart';
 import 'package:login_auth_model/provider/auth/auth_provider.dart';
 import 'package:login_auth_model/screen/auth/verify_otp_screen.dart';
-import 'package:login_auth_model/screen/home_page.dart';
 import 'package:provider/provider.dart';
-
 import '../../widgets/custom_input_text_field.dart';
 
 class RegistrationScreen extends StatefulWidget {
@@ -16,116 +14,165 @@ class RegistrationScreen extends StatefulWidget {
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
+  /// TextEditingControllers
   final TextEditingController _emailTextController = TextEditingController();
   final TextEditingController _nameTextController = TextEditingController();
   final TextEditingController _passwordTextController = TextEditingController();
   final TextEditingController _conformPasswordTextController =
-      TextEditingController();
-@override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    // context.read<AuthProvider>().registration(RegistrationModel());
+  TextEditingController();
+
+  /// Global Form Key
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    _emailTextController.dispose();
+    _nameTextController.dispose();
+    _passwordTextController.dispose();
+    _conformPasswordTextController.dispose();
+    super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Registration page')),
-      body: Form(
-        child: Builder(
-          builder: (context) {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Consumer<AuthProvider>(
-                builder: (context, authProvider, child) {
-                  bool obscurePasswordTextValue =
-                      authProvider.obscurePasswordTextValue;
-                  bool obscureConformPasswordTextValue =
-                      authProvider.obscureConformPasswordTextValue;
-                  final data = authProvider.registrationResponse;
-                  return SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CustomInputTextField(
-                          textEditingController: _nameTextController,
-                          labelText: 'Name',
-                          hintText: 'Please enter your name',
-                          suffixIcon: Icon(Icons.person),
-                          validationError:
-                              data?.errors?.email?.first.toString() ??
-                              'Please input your name',
-                        ),
-                        SizedBox(height: 20),
-                        CustomInputTextField(
-                          textEditingController: _emailTextController,
-                          keyboardType: TextInputType.emailAddress,
-                          labelText: 'Email',
-                          hintText: 'Please enter your email',
-                          suffixIcon: Icon(Icons.email),
-                          validationError:
-                              data?.errors?.email?.first.toString() ??
-                              'Please input your email',
-                        ),
-                        SizedBox(height: 20),
-                        CustomInputTextField(
-                          textEditingController: _passwordTextController,
-                          keyboardType: TextInputType.visiblePassword,
-                          obscureTextValue: obscurePasswordTextValue,
-                          labelText: 'Password',
-                          hintText: 'Please enter your password',
-                          suffixTconButton: IconButton(
-                            onPressed: () {
-                              authProvider.obscurePasswordValue();
-                            },
-                            icon: obscurePasswordTextValue
-                                ? Icon(CupertinoIcons.eye_slash)
-                                : Icon(CupertinoIcons.eye),
-                          ),
-                          validationError:
-                              data?.errors?.password?.first.toString() ??
-                              'Please input your password',
-                        ),
-                        SizedBox(height: 20),
-                    
-                        CustomInputTextField(
-                          textEditingController: _conformPasswordTextController,
-                          keyboardType: TextInputType.visiblePassword,
-                          obscureTextValue: obscureConformPasswordTextValue,
-                    
-                          labelText: 'Conform password',
-                          hintText: 'Please enter your conform password',
-                          // suffixIcon: Icon(Icons.email),
-                          suffixTconButton: IconButton(
-                            onPressed: () {
-                              authProvider.obscureConformPasswordValue();
-                            },
-                            icon: obscureConformPasswordTextValue
-                                ? Icon(CupertinoIcons.eye_slash)
-                                : Icon(CupertinoIcons.eye_fill),
-                          ),
-                          validationError:
-                              data?.errors?.passwordConfirmation?.first.toString() ??
-                              'Please input your conform password',
-                        ),
-                        SizedBox(height: 20),
-                    
-                        authProvider.isLoading? CircularProgressIndicator():ElevatedButton(
-                          onPressed: () async {
-                           await _saveRegistration(context);
-                          },
-                          child: Text('Registration'),
-                        ),
-                        SizedBox(height: 20,),
-                        ElevatedButton(onPressed: () {
-                          print(_emailTextController.text);
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => VerifyOtpScreen(email: _emailTextController.text,),));
+      appBar: AppBar(title: const Text('Registration Page')),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Consumer<AuthProvider>(
+          builder: (context, authProvider, child) {
+            bool obscurePasswordTextValue = authProvider.obscurePasswordTextValue;
+            bool obscureConformPasswordTextValue =
+                authProvider.obscureConformPasswordTextValue;
 
-                        }, child: Text('Resend'))
-                      ],
+            final data = authProvider.registrationResponse;
+
+            return SingleChildScrollView(
+              child: Form(
+                key: _formKey, // <-- Use form key here
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    /// Name Field
+                    CustomInputTextField(
+                      textEditingController: _nameTextController,
+                      labelText: 'Name',
+                      hintText: 'Please enter your name',
+                      suffixIcon: const Icon(Icons.person),
+                      validationError: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return data?.errors?.name?.first.toString() ?? 'Please input your name';
+                        }
+                        return null;
+                      },
+                      // validationError: data?.errors?.name?.first.toString(),
                     ),
-                  );
-                },
+                    const SizedBox(height: 20),
+
+                    /// Email Field
+                    CustomInputTextField(
+                      textEditingController: _emailTextController,
+                      keyboardType: TextInputType.emailAddress,
+                      labelText: 'Email',
+                      hintText: 'Please enter your email',
+                      suffixIcon: const Icon(Icons.email),
+                      validationError: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return data?.errors?.email?.first.toString()??'Please input your email';
+                        }
+                        if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                          return data?.errors?.email?.first.toString()??'Please enter a valid email';
+                        }
+                        return null;
+                      },
+                      // validationError: data?.errors?.email?.first.toString(),
+                    ),
+                    const SizedBox(height: 20),
+
+                    /// Password Field
+                    CustomInputTextField(
+                      textEditingController: _passwordTextController,
+                      keyboardType: TextInputType.visiblePassword,
+                      obscureTextValue: obscurePasswordTextValue,
+                      labelText: 'Password',
+                      hintText: 'Please enter your password',
+                      suffixTconButton: IconButton(
+                        onPressed: () {
+                          authProvider.obscurePasswordValue();
+                        },
+                        icon: obscurePasswordTextValue
+                            ? const Icon(CupertinoIcons.eye_slash)
+                            : const Icon(CupertinoIcons.eye),
+                      ),
+                      validationError: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return data?.errors?.password?.first.toString() ?? 'Please input your password';
+                        }
+                        if (value.length < 6) {
+                          return data?.errors?.password?.first.toString()??'Password must be at least 6 characters';
+                        }
+                        return null;
+                      },
+                      // validationError: data?.errors?.password?.first.toString(),
+                    ),
+                    const SizedBox(height: 20),
+
+                    /// Confirm Password Field
+                    CustomInputTextField(
+                      textEditingController: _conformPasswordTextController,
+                      keyboardType: TextInputType.visiblePassword,
+                      obscureTextValue: obscureConformPasswordTextValue,
+                      labelText: 'Confirm Password',
+                      hintText: 'Please re-enter your password',
+                      suffixTconButton: IconButton(
+                        onPressed: () {
+                          authProvider.obscureConformPasswordValue();
+                        },
+                        icon: obscureConformPasswordTextValue
+                            ? const Icon(CupertinoIcons.eye_slash)
+                            : const Icon(CupertinoIcons.eye_fill),
+                      ),
+                      validationError: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return data?.errors?.passwordConfirmation?.first.toString()??'Please confirm your password';
+                        }
+                        if (value != _passwordTextController.text.trim()) {
+                          return data?.errors?.passwordConfirmation?.first.toString()?? 'Passwords do not match';
+                        }
+                        return null;
+                      },
+                      // validationError: data?.errors?.passwordConfirmation?.first.toString(),
+                    ),
+                    const SizedBox(height: 20),
+
+                    /// Registration Button
+                    authProvider.isRegistrationLoading
+                        ? const CircularProgressIndicator()
+                        : ElevatedButton(
+                      onPressed: () async {
+                        await _saveRegistration(context);
+                      },
+                      child: const Text('Registration'),
+                    ),
+                    const SizedBox(height: 20),
+
+                    /// Resend OTP Button
+                    ElevatedButton(
+                      onPressed: () {
+                        debugPrint(_emailTextController.text);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => VerifyOtpScreen(
+                              email: _emailTextController.text,
+                            ),
+                          ),
+                        );
+                      },
+                      child: const Text('Resend OTP'),
+                    ),
+                  ],
+                ),
               ),
             );
           },
@@ -134,34 +181,46 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
   }
 
-  _saveRegistration(BuildContext context)async {
-    if (Form.of(context).validate()) {
+  /// Save Registration Method
+  Future<void> _saveRegistration(BuildContext context) async {
+    if (_formKey.currentState!.validate()) {
       final registrationData = RegistrationModel(
         name: _nameTextController.text.trim(),
         email: _emailTextController.text.trim(),
         password: _passwordTextController.text.trim(),
         passwordConfirmation: _conformPasswordTextController.text.trim(),
       );
-     bool isSuccess = await context.read<AuthProvider>().registration(registrationData);
 
+      bool isSuccess =
+      await context.read<AuthProvider>().registration(registrationData);
 
-     if(isSuccess){
-       final registrationResponse =  context.read<AuthProvider>().registrationResponse;
+      if (!context.mounted) return;
 
-       Navigator.push(context, MaterialPageRoute(builder: (context) => VerifyOtpScreen(email: _emailTextController.text.trim(),),));
+      final registrationResponse =
+          context.read<AuthProvider>().registrationResponse;
 
-       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(registrationResponse?.message ?? '')));
+      if (isSuccess) {
+        if (!context.mounted) return;
 
-     }else{
-       final registrationResponse =  context.read<AuthProvider>().registrationResponse;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VerifyOtpScreen(
+              email: _emailTextController.text.trim(),
+            ),
+          ),
+        );
 
-       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(registrationResponse?.message ?? '')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(registrationResponse?.message ?? 'Success')),
+        );
+      } else {
+        if (!context.mounted) return;
 
-     }
-
-
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(registrationResponse?.message ?? 'Failed')),
+        );
+      }
     }
   }
 }
-
-
