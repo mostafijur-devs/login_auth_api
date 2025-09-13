@@ -13,8 +13,16 @@ class LocalDbProvider extends ChangeNotifier{
 
   setLoginToken(String userToken) async{
     await _sharePreferanceRepository.setLoginToken(userToken);
-     _userToken = await _sharePreferanceRepository.getLoginToken();
+    notifyListeners();
 
+  }
+  getToken() async{
+    _userToken = await _sharePreferanceRepository.getLoginToken();
+    notifyListeners();
+  }
+  Future<void> deleteToken()async{
+    await _sharePreferanceRepository.deleteToken();
+    getToken();
   }
 
 

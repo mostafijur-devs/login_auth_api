@@ -41,6 +41,7 @@ dependencies:
   pin_code_fields: ^8.0.1
   shared_preferences: ^2.5.3
   page_transition: ^2.2.1
+  flutter_native_splash: ^2.4.6
 
 dev_dependencies:
   flutter_test:
@@ -52,6 +53,22 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+
+flutter_native_splash:
+#  color: "#000000"                # ব্যাকগ্রাউন্ড কালার (কালো)
+  image: assets/img.png           # মূল স্প্ল্যাশ লোগো (সেন্টারে)
+  branding: assets/img_1.png      # নিচের দিকে ব্র্যান্ডিং ইমেজ
+  background_image: assets/img_2.png # ফুল ব্যাকগ্রাউন্ড ইমেজ
+
+  android_12:
+    image: assets/img.png
+    icon_background_color: "#000000"
+    branding: assets/img_1.png        # Android 12-এর জন্য আলাদা করে branding যোগ করতে হবে
+    background_image: assets/img_2.png # Android 12-এর জন্য ব্যাকগ্রাউন্ড ইমেজ
+
+  web: false                         # Web এর জন্য সাপোর্ট না চাইলে false
+                 # Web support off করলে false
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -65,9 +82,10 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - assets/img.png
+    - assets/img_1.png
+    - assets/img_2.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

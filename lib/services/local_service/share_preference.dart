@@ -16,4 +16,15 @@ class SharePreferenceService extends SharePreferanceRepository {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_tokenKey);
   }
+
+  @override
+  Future<void> deleteToken()async {
+    final prefs = await SharedPreferences.getInstance();
+   if(prefs.containsKey(_tokenKey)){
+   await prefs.remove(_tokenKey);
+   print('delete success');
+   }else{
+     print('not success');
+   }
+  }
 }

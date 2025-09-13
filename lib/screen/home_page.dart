@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:login_auth_model/screen/auth/login_screen.dart';
+import 'package:provider/provider.dart';
+import '../provider/local_database_provider/local_bd_provider.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -6,8 +9,6 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('Home Screen');
-
     return Scaffold(
 
       appBar: AppBar(
@@ -15,7 +16,19 @@ class HomePage extends StatelessWidget {
         centerTitle: true,
       ),
       body: Center(
-        child: FlutterLogo(size: 100,),) ,
+        child: Column(
+          children: [
+            FlutterLogo(size: 100,),
+            ElevatedButton(
+              onPressed: ()  {
+                context.read<LocalDbProvider>().deleteToken();
+                Navigator.push(context,  MaterialPageRoute(builder: (context) => LoginScreen(),));
+              },
+              child: Text('LogOut'),
+            ),
+
+          ],
+        ),) ,
     );
   }
 }

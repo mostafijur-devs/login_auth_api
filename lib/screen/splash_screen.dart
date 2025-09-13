@@ -21,10 +21,10 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void _chackLogin() async {
+    context.read<LocalDbProvider>().getToken();
     await Future.delayed(Duration(seconds: 2)).then((value) {
       if (!mounted) return;
-      if (context.read<LocalDbProvider>().userToken != null &&
-          context.read<LocalDbProvider>().userToken!.isNotEmpty) {
+      if (context.read<LocalDbProvider>().userToken != null) {
         Navigator.pushReplacement(
           context,
           PageTransition(

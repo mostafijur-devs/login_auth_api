@@ -37,103 +37,113 @@ class _LoginScreenState extends State<LoginScreen> {
     // final provider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Form(
-            key: _formKey, // এখানে key অ্যাড করা হলো
-            child: Column(
-              children: [
-                const Spacer(),
-                const Text(
-                  'Login Screen',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                FlutterLogo(size: 100,),
-                const Spacer(),
+      body: Padding(
+        padding: const EdgeInsets.all(12),
+        child: SingleChildScrollView(
+          child: SafeArea(
+            child: Form(
+              key: _formKey, // এখানে key অ্যাড করা হলো
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 30),
 
-                /// Email Field
-                CustomInputTextField(
-                  hintText: 'Enter your email',
-                  labelText: "Email",
-                  textEditingController: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  suffixIcon: const Icon(Icons.email),
-                  validationError: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    if (!RegExp(
-                      r'^[^@]+@[^@]+\.[^@]+',
-                    ).hasMatch(value.trim())) {
-                      return 'Please enter a valid email address';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20),
+                  const Text(
+                    'Login Screen',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 30),
 
-                /// Password Field
-                CustomInputTextField(
-                  hintText: 'Enter your password',
-                  labelText: "Password",
-                  textEditingController: _passwordController,
-                  obscureTextValue: true,
-                  suffixIcon: const Icon(Icons.lock),
-                  validationError: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please enter your password';
-                    }
-                    if (value.trim().length < 6) {
-                      return 'Password must be at least 6 characters long';
-                    }
-                    return null;
-                  },
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ForgetPasswordOtpSendScreen(),
+                  FlutterLogo(size: 100,),
+
+                  const SizedBox(height: 30),
+
+                  /// Email Field
+                  CustomInputTextField(
+                    hintText: 'Enter your email',
+                    labelText: "Email",
+                    textEditingController: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    suffixIcon: const Icon(Icons.email),
+                    validationError: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter your email';
+                      }
+                      if (!RegExp(
+                        r'^[^@]+@[^@]+\.[^@]+',
+                      ).hasMatch(value.trim())) {
+                        return 'Please enter a valid email address';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+            
+                  /// Password Field
+                  CustomInputTextField(
+                    hintText: 'Enter your password',
+                    labelText: "Password",
+                    textEditingController: _passwordController,
+                    obscureTextValue: true,
+                    suffixIcon: const Icon(Icons.lock),
+                    validationError: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter your password';
+                      }
+                      if (value.trim().length < 6) {
+                        return 'Password must be at least 6 characters long';
+                      }
+                      return null;
+                    },
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ForgetPasswordOtpSendScreen(),
+                            ),
+                          );
+                        },
+                        child: Text('Forget your password'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+            
+                  /// Login Button
+                  Consumer<AuthProvider>(
+                     builder: (context, authProvider, child) =>
+                     authProvider.isLoginLoading
+                        ? const CircularProgressIndicator()
+                        : ElevatedButton(
+                            onPressed: () async {
+                              await _loginFunction(context);
+                            },
+                            child: const Text('Login'),
                           ),
-                        );
-                      },
-                      child: Text('Forget your password'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-
-                /// Login Button
-                Consumer<AuthProvider>(
-                   builder: (context, authProvider, child) =>
-                   authProvider.isLoginLoading
-                      ? const CircularProgressIndicator()
-                      : ElevatedButton(
-                          onPressed: () async {
-                            await _loginFunction(context);
-                          },
-                          child: const Text('Login'),
-                        ),
-                ),
-
-                const SizedBox(height: 20),
-
-                /// Registration Button
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(context, PageTransition(type:PageTransitionType.leftToRight,child:RegistrationScreen() ));
-
-                  },
-                  child: const Text('Go to Registration'),
-                ),
-
-                const Spacer(),
-              ],
+                  ),
+            
+                  const SizedBox(height: 20),
+            
+                  /// Registration Button
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(context, PageTransition(type:PageTransitionType.leftToRight,child:RegistrationScreen() ));
+            
+                    },
+                    child: const Text('Go to Registration'),
+                  ),
+                  ElevatedButton(onPressed: () {
+                    context.read<LocalDbProvider>().userToken;
+                    print(context.read<LocalDbProvider>().userToken);
+                  }, child: Text('Press'))
+                  
+                ],
+              ),
             ),
           ),
         ),
@@ -193,10 +203,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (isSuccess) {
       if (!context.mounted) return;
-      context.read<LocalDbProvider>().setLoginToken(authResponse?.data?.token ?? '');
+     await context.read<LocalDbProvider>().setLoginToken(authResponse!.data!.token!);
+     print(authResponse.data!.token!);
       Navigator.pushReplacement(context, PageTransition(type:PageTransitionType.leftToRight,child:HomePage() ));
 
-      _showSnackBar(authResponse?.message ?? 'Login Successful');
+      _showSnackBar(authResponse.message ?? 'Login Successful');
     } else {
       _showSnackBar(authResponse?.message ?? 'Login Failed');
     }
