@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:login_auth_model/provider/local_database_provider/local_bd_provider.dart';
+import 'package:login_auth_model/screen/auth/forget_password/forget_password_otp_send_screen.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 import 'package:login_auth_model/model/auth/login_auth_model/login_model.dart';
@@ -31,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<AuthProvider>(context);
+    // final provider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
       body: SafeArea(
@@ -46,6 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   'Login Screen',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
+                FlutterLogo(size: 100,),
                 const Spacer(),
 
                 /// Email Field
@@ -59,7 +63,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     if (value == null || value.trim().isEmpty) {
                       return 'Please enter your email';
                     }
-                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value.trim())) {
+                    if (!RegExp(
+                      r'^[^@]+@[^@]+\.[^@]+',
+                    ).hasMatch(value.trim())) {
                       return 'Please enter a valid email address';
                     }
                     return null;
@@ -84,16 +90,35 @@ class _LoginScreenState extends State<LoginScreen> {
                     return null;
                   },
                 ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ForgetPasswordOtpSendScreen(),
+                          ),
+                        );
+                      },
+                      child: Text('Forget your password'),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 20),
 
                 /// Login Button
-                provider.isLoginLoading
-                    ? const CircularProgressIndicator()
-                    : ElevatedButton(
-                  onPressed: () async {
-                    await _loginFunction(context);
-                  },
-                  child: const Text('Login'),
+                Consumer<AuthProvider>(
+                   builder: (context, authProvider, child) =>
+                   authProvider.isLoginLoading
+                      ? const CircularProgressIndicator()
+                      : ElevatedButton(
+                          onPressed: () async {
+                            await _loginFunction(context);
+                          },
+                          child: const Text('Login'),
+                        ),
                 ),
 
                 const SizedBox(height: 20),
@@ -101,12 +126,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 /// Registration Button
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const RegistrationScreen(),
-                      ),
-                    );
+                    Navigator.push(context, PageTransition(type:PageTransitionType.leftToRight,child:RegistrationScreen() ));
+
                   },
                   child: const Text('Go to Registration'),
                 ),
@@ -172,10 +193,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (isSuccess) {
       if (!context.mounted) return;
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
-      );
+      context.read<LocalDbProvider>().setLoginToken(authResponse?.data?.token ?? '');
+      Navigator.pushReplacement(context, PageTransition(type:PageTransitionType.leftToRight,child:HomePage() ));
+
       _showSnackBar(authResponse?.message ?? 'Login Successful');
     } else {
       _showSnackBar(authResponse?.message ?? 'Login Failed');
@@ -185,9 +205,8 @@ class _LoginScreenState extends State<LoginScreen> {
   /// SnackBar আলাদা ফাংশনে রাখা হলো
   void _showSnackBar(String message) {
     if (!mounted) return; // নিরাপদ
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
-
 }

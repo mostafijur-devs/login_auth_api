@@ -1,22 +1,24 @@
 
 import 'package:flutter/material.dart';
 import 'package:login_auth_model/model/auth/reset_password_model/reset_password_model.dart';
-import 'package:login_auth_model/screen/home_page.dart';
+import 'package:login_auth_model/screen/auth/login_screen.dart';
 import 'package:provider/provider.dart';
 
-import '../../provider/auth/auth_provider.dart';
-import '../../widgets/custom_input_text_field.dart';
+import '../../../provider/auth/auth_provider.dart';
+import '../../../widgets/custom_input_text_field.dart';
 
 class NewPasswordCreateScreen extends StatelessWidget {
   NewPasswordCreateScreen({super.key });
 
 
-  final TextEditingController _PasswordTextController = TextEditingController();
+  final TextEditingController _passwordTextController = TextEditingController();
   final TextEditingController _conformPasswordTextController = TextEditingController();
   final  _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
+    print('Create new password screen Screen');
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Forget password OTP varification screen'),
@@ -38,7 +40,7 @@ class NewPasswordCreateScreen extends StatelessWidget {
                 SizedBox(height: 20,),
                 /// Password Field
                 CustomInputTextField(
-                  textEditingController: _PasswordTextController,
+                  textEditingController: _passwordTextController,
                   keyboardType: TextInputType.visiblePassword,
                   labelText: 'Password',
                   hintText: 'Please enter your password',
@@ -89,16 +91,18 @@ class NewPasswordCreateScreen extends StatelessWidget {
   _savePassword(BuildContext context, AuthProvider authProvider) async{
     if(_formKey.currentState!.validate()){
      final resetPasswordModel = ResetPasswordModel(
-       password: _PasswordTextController.text.trim(),
+       password: _passwordTextController.text.trim(),
        passwordConfirmation: _conformPasswordTextController.text.trim(),
        resetToken: authProvider.forgetPasswordVarifyResponse?.data?.resetToken ?? ''
      );
       final success = await authProvider.changingConformPassword(resetPasswordModel);
       if(success){
-        Navigator.push(context, MaterialPageRoute(builder: (context) =>HomePage()));
+        if(!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text( authProvider.forgetPasswordVarifyResponse?.message ?? 'Success')));
-      }else{
 
+        Navigator.push(context, MaterialPageRoute(builder: (context) =>LoginScreen()));
+      }else{
+        if(!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text( authProvider.forgetPasswordVarifyResponse?.message ?? ' failed')));
 
 

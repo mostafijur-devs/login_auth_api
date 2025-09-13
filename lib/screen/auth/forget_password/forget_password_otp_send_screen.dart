@@ -19,6 +19,7 @@ class _ForgetPasswordOtpSendScreenState extends State<ForgetPasswordOtpSendScree
 
   @override
   Widget build(BuildContext context) {
+    print('Forget password send OTP Screen');
 
 
     return Scaffold(
@@ -67,13 +68,11 @@ class _ForgetPasswordOtpSendScreenState extends State<ForgetPasswordOtpSendScree
      if(_formKey.currentState!.validate()){
        final success = await context.read<AuthProvider>().forgetPasswordResendOtp(_emailController.text.trim());
 
+       if(!context.mounted) return;
        final  provider =  context.read<AuthProvider>().forgetResendOtpResponse;
-       print(success);
-
-       print(_emailController.text);
        if(success){
-         Navigator.push(context, MaterialPageRoute(builder: (context) =>ForgetPasswordSendOtpVerificationScreen(email: _emailController.text.trim(),) ,));
          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text( provider?.message ?? 'Success')));
+         Navigator.push(context, MaterialPageRoute(builder: (context) =>ForgetPasswordSendOtpVerificationScreen(email: _emailController.text.trim(),) ,));
        }else{
 
          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text( provider?.message ?? ' failed')));

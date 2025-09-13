@@ -37,6 +37,10 @@ dependencies:
   dio: ^5.9.0
   http: ^1.5.0
   provider: ^6.1.5+1
+  flutter_otp_text_field: ^1.5.1+1
+  pin_code_fields: ^8.0.1
+  shared_preferences: ^2.5.3
+  page_transition: ^2.2.1
 
 dev_dependencies:
   flutter_test:

@@ -18,8 +18,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController _emailTextController = TextEditingController();
   final TextEditingController _nameTextController = TextEditingController();
   final TextEditingController _passwordTextController = TextEditingController();
-  final TextEditingController _conformPasswordTextController =
-  TextEditingController();
+  final TextEditingController _conformPasswordTextController = TextEditingController();
 
   /// Global Form Key
   final _formKey = GlobalKey<FormState>();
@@ -35,6 +34,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('Registration Screen');
+
     return Scaffold(
       appBar: AppBar(title: const Text('Registration Page')),
       body: Padding(

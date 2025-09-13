@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:login_auth_model/model/auth/verify_otp/verify_otp_model.dart';
+import 'package:login_auth_model/repository/local_repository/share_preferance_repository.dart';
 import 'package:login_auth_model/services/auth_service/auth_services.dart';
+import 'package:login_auth_model/services/local_service/share_preference.dart';
 import '../../model/auth/auth_response.dart';
 import '../../model/auth/login_auth_model/login_model.dart';
 import '../../model/auth/registration_auth_model/registration_model.dart';
@@ -11,6 +15,10 @@ class AuthProvider extends ChangeNotifier {
   /// Repository call
   final AuthRepository _authRepository = AuthServices();
 
+
+  final int _resendTimeCount = 10;
+
+
   /// login auth API response models
   AuthResponse? _loginAuth;
   AuthResponse? _otpVarification;
@@ -18,7 +26,7 @@ class AuthProvider extends ChangeNotifier {
   AuthResponse? _registrationResponse;
   AuthResponse? _forgetPasswordResendOtpResponse;
   AuthResponse? _forgetPasswordVarifyResponse;
-  AuthResponse? _passwordWithTokenRespose;
+  AuthResponse? _passwordWithTokenResponse;
 
   /// API request waiting loading private variable
   bool _isLoginLoading = false;
@@ -28,10 +36,14 @@ class AuthProvider extends ChangeNotifier {
   bool _isForgetPasswordResendLoading = false;
   bool _isForgetPasswordVarifyLoading = false;
   bool _isChangingConformPasswordLoading = false;
+  bool _isResend = false;
+  late int _resendTime;
+  Timer? _timer;
 
   /// obscure password calling private variable
   bool _obscurePasswordTextValue = true;
   bool _obscureConformPasswordValue = true;
+
 
   /// login auth API response models getter methods
   AuthResponse? get loginAuth => _loginAuth;
@@ -47,7 +59,12 @@ class AuthProvider extends ChangeNotifier {
   AuthResponse? get forgetPasswordVarifyResponse =>
       _forgetPasswordVarifyResponse;
 
-  AuthResponse? get passwordWithToken => _passwordWithTokenRespose;
+  AuthResponse? get passwordWithToken => _passwordWithTokenResponse;
+
+  /// resend verify Timer setting
+
+  bool get isResend => _isResend;
+  int get resendTime => _resendTime;
 
   /// API request waiting loading private variable getter methods
   bool get isLoginLoading => _isLoginLoading;
@@ -79,6 +96,34 @@ class AuthProvider extends ChangeNotifier {
   obscureConformPasswordValue() {
     _obscureConformPasswordValue = !_obscureConformPasswordValue;
     notifyListeners();
+  }
+
+  void startResendOTP( VoidCallback? onTimerFinish ){
+    _isResend = false;
+    notifyListeners();
+    _resendTime = _resendTimeCount;
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if(_resendTime > 0){
+        _resendTime--;
+        notifyListeners();
+      }
+      else{
+        timer.cancel();
+        _isResend = true;
+        _resendTime = _resendTimeCount;
+        notifyListeners();
+        if(onTimerFinish != null){
+          onTimerFinish();
+        }
+      }
+
+    },);
+
+  }
+  @override
+  void dispose() {
+    super.dispose();
+    _timer?.cancel();
   }
 
   /// Login API call to repository
@@ -232,7 +277,7 @@ class AuthProvider extends ChangeNotifier {
 
     try {
       final result = await _authRepository.passwordWithToken(resetPasswordModel);
-      _passwordWithTokenRespose = result;
+      _passwordWithTokenResponse = result;
       notifyListeners();
       return result.status ?? false;
     } catch (error) {
