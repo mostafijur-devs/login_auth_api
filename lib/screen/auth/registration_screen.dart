@@ -40,7 +40,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       appBar: AppBar(title: const Text('Registration Page')),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Consumer<AuthProvider>(
+        child: Consumer<ApiAuthProvider>(
           builder: (context, authProvider, child) {
             bool obscurePasswordTextValue = authProvider.obscurePasswordTextValue;
             bool obscureConformPasswordTextValue =
@@ -193,12 +193,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       );
 
       bool isSuccess =
-      await context.read<AuthProvider>().registration(registrationData);
+      await context.read<ApiAuthProvider>().registration(registrationData);
 
       if (!context.mounted) return;
 
       final registrationResponse =
-          context.read<AuthProvider>().registrationResponse;
+          context.read<ApiAuthProvider>().registrationResponse;
 
       if (isSuccess) {
         if (!context.mounted) return;

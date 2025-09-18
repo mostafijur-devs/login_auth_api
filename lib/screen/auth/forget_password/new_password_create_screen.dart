@@ -25,7 +25,7 @@ class NewPasswordCreateScreen extends StatelessWidget {
         centerTitle: true,
       ),
 
-      body:Consumer<AuthProvider>(
+      body:Consumer<ApiAuthProvider>(
         builder: (context, authProvider, child) =>Padding(
           padding: const EdgeInsets.all(20.0),
           child: Form(
@@ -88,7 +88,7 @@ class NewPasswordCreateScreen extends StatelessWidget {
       ),
     );
   }
-  _savePassword(BuildContext context, AuthProvider authProvider) async{
+  _savePassword(BuildContext context, ApiAuthProvider authProvider) async{
     if(_formKey.currentState!.validate()){
      final resetPasswordModel = ResetPasswordModel(
        password: _passwordTextController.text.trim(),
@@ -110,7 +110,7 @@ class NewPasswordCreateScreen extends StatelessWidget {
     }
 
   }
-  validation(String? value, AuthProvider authProvider) {
+  validation(String? value, ApiAuthProvider authProvider) {
     if (value == null || value.trim().isEmpty) {
       return authProvider.forgetResendOtpResponse?.errors?.email?.first ?? 'Email is required';
     }

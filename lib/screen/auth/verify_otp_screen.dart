@@ -30,7 +30,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<AuthProvider>().startResendOTP(
+    context.read<ApiAuthProvider>().startResendOTP(
       () {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -48,7 +48,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
   Widget build(BuildContext context) {
     print('Registration OTP varification Screen');
 
-    final provider = context.watch<AuthProvider>();
+    final provider = context.watch<ApiAuthProvider>();
 
     return Scaffold(
       appBar: AppBar(
@@ -59,7 +59,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Consumer<AuthProvider>(
+          child: Consumer<ApiAuthProvider>(
             builder: (context, authProvider, child) => Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -111,7 +111,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
                 const SizedBox(height: 20),
 
                 if(!authProvider.isResend)
-                Consumer<AuthProvider>(
+                Consumer<ApiAuthProvider>(
                   builder: (context, value, child) =>Text('Resend otp ${value.resendTime}')),
 
                 /// Resend OTP Button
@@ -161,7 +161,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
 
   /// Verify OTP Method
   Future<void> _verifyOTP(BuildContext context) async {
-    final provider = Provider.of<AuthProvider>(context, listen: false);
+    final provider = Provider.of<ApiAuthProvider>(context, listen: false);
 
     /// Validate Form
     if (!_formKey.currentState!.validate()) return;
@@ -181,7 +181,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
+        MaterialPageRoute(builder: (context) =>  HomePage()),
       );
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -196,11 +196,11 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
 
   /// Resend OTP Method
   Future<void> _resendOTP(BuildContext context) async {
-    final provider = Provider.of<AuthProvider>(context, listen: false);
+    final provider = Provider.of<ApiAuthProvider>(context, listen: false);
     final isSuccess = await provider.registrationResendOtp(widget.email);
     if (!context.mounted) return;
     if (isSuccess) {
-      context.read<AuthProvider>().startResendOTP(() {
+      context.read<ApiAuthProvider>().startResendOTP(() {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Timer finished! You can resend OTP now."),

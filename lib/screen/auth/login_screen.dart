@@ -1,9 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:login_auth_model/provider/auth/google_sign_provider.dart';
 import 'package:login_auth_model/provider/local_database_provider/local_bd_provider.dart';
+import 'package:login_auth_model/screen/auth/firebase_phone_number_login/phone_auth_screen.dart';
 import 'package:login_auth_model/screen/auth/forget_password/forget_password_otp_send_screen.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
-
 import 'package:login_auth_model/model/auth/login_auth_model/login_model.dart';
 import 'package:login_auth_model/provider/auth/auth_provider.dart';
 import 'package:login_auth_model/screen/auth/registration_screen.dart';
@@ -37,6 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
     // final provider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
+      // backgroundColor: Colors.grey,
       body: Padding(
         padding: const EdgeInsets.all(12),
         child: SingleChildScrollView(
@@ -54,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 30),
 
-                  FlutterLogo(size: 100,),
+                  FlutterLogo(size: 100),
 
                   const SizedBox(height: 30),
 
@@ -78,14 +82,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                   ),
                   const SizedBox(height: 20),
-            
+
                   /// Password Field
                   CustomInputTextField(
                     hintText: 'Enter your password',
                     labelText: "Password",
                     textEditingController: _passwordController,
                     obscureTextValue: true,
-                    suffixIcon: const Icon(Icons.lock),
+                    suffixIcon: const Icon(Icons.remove_red_eye_outlined),
                     validationError: (value) {
                       if (value == null || value.trim().isEmpty) {
                         return 'Please enter your password';
@@ -104,7 +108,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ForgetPasswordOtpSendScreen(),
+                              builder: (context) =>
+                                  ForgetPasswordOtpSendScreen(),
                             ),
                           );
                         },
@@ -113,11 +118,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                   const SizedBox(height: 20),
-            
+
                   /// Login Button
-                  Consumer<AuthProvider>(
-                     builder: (context, authProvider, child) =>
-                     authProvider.isLoginLoading
+                  Consumer<ApiAuthProvider>(
+                    builder: (context, authProvider, child) =>
+                        authProvider.isLoginLoading
                         ? const CircularProgressIndicator()
                         : ElevatedButton(
                             onPressed: () async {
@@ -126,22 +131,165 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: const Text('Login'),
                           ),
                   ),
-            
+
                   const SizedBox(height: 20),
-            
+
                   /// Registration Button
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(context, PageTransition(type:PageTransitionType.leftToRight,child:RegistrationScreen() ));
-            
-                    },
-                    child: const Text('Go to Registration'),
+                  Row(
+                    // spacing: 30 ,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              type: PageTransitionType.leftToRight,
+                              child: RegistrationScreen(),
+                            ),
+                          );
+                        },
+                        child: const Text('Go to Registration'),
+                      ),
+                      // const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              type: PageTransitionType.leftToRight,
+                              child: PhoneAuthScreen(),
+                            ),
+                          );
+                        },
+                        child: const Text('Phone login'),
+                      ),
+                      // const SizedBox(height: 20),
+                    ],
                   ),
-                  ElevatedButton(onPressed: () {
-                    context.read<LocalDbProvider>().userToken;
-                    print(context.read<LocalDbProvider>().userToken);
-                  }, child: Text('Press'))
-                  
+
+                  // Consumer<GoogleSignProvider>(
+                  //   builder: (context, googleProvider, child) =>
+                  //       googleProvider.isLoading
+                  //       ? CircularProgressIndicator(
+                  //           backgroundColor: Colors.black,
+                  //         )
+                  //       : ElevatedButton.icon(
+                  //           onPressed: () async {
+                  //             await context
+                  //                 .read<GoogleSignProvider>()
+                  //                 .googleSingIn();
+                  //             User? user = googleProvider.currentUser;
+                  //
+                  //             if (user != null) {
+                  //               Navigator.pushReplacement(
+                  //                 context,
+                  //                 MaterialPageRoute(
+                  //                   builder: (context) => HomePage(),
+                  //                 ),
+                  //               );
+                  //             }
+                  //           },
+                  //           icon: Icon(Icons.g_mobiledata, size: 20),
+                  //           label: Text('Google sign in'),
+                  //         ),
+                  // ),
+
+                  // const SizedBox(height: 20),
+
+                  // /// Registration Button
+                  // ElevatedButton(
+                  //   onPressed: () async {
+                  //     await signInWithFacebook().then((value) {
+                  //       Navigator.push(
+                  //         context,
+                  //         PageTransition(
+                  //           type: PageTransitionType.leftToRight,
+                  //           child: HomePage(),
+                  //         ),
+                  //       );
+                  //     });
+                  //   },
+                  //   child: const Text('Facebook Login'),
+                  // ),
+                  SizedBox(height: 20),
+                  SizedBox(
+                    height: 100,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Consumer<GoogleSignProvider>(
+                            builder: (context, googleProvider, child) =>
+                                 GestureDetector(
+                                    onTap: () async {
+                                      await context
+                                          .read<GoogleSignProvider>()
+                                          .googleSingIn();
+                                      User? user = googleProvider.currentUser;
+
+                                      if (user != null) {
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => HomePage(),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    child: Image.asset(
+                                      'assets/images/google.png',
+                                      height: 60,
+                                      // color: Colors.red,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () async {
+                              await signInWithFacebook().then((value) {
+                                Navigator.push(
+                                  context,
+                                  PageTransition(
+                                    type: PageTransitionType.leftToRight,
+                                    child: HomePage(),
+                                  ),
+                                );
+                              });
+                            },
+                            child: Image.asset(
+                              'assets/images/facebook.png',
+                              height: 90,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () async {
+                              await signInWithFacebook().then((value) {
+                                Navigator.push(
+                                  context,
+                                  PageTransition(
+                                    type: PageTransitionType.leftToRight,
+                                    child: HomePage(),
+                                  ),
+                                );
+                              });
+                            },
+                            child: Image.asset(
+                              'assets/images/phone.png',
+                              height: 60,
+                            ),
+                          ),
+                        ),
+                        // Expanded(
+                        //   child:
+                        // ),
+                      ],
+                    ),
+                  ),
+
+                  // Spacer()
                 ],
               ),
             ),
@@ -151,41 +299,22 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  /// Login Function
-  // Future<void> _loginFunction(BuildContext context) async {
-  //   if (_formKey.currentState!.validate()) {
-  //     /// Create login data
-  //     final loginData = LoginModel(
-  //       email: _emailController.text.trim(),
-  //       password: _passwordController.text.trim(),
-  //     );
-  //
-  //     /// Call provider method
-  //     if (!mounted) return;
-  //     ///
-  //     final isSuccess = await context.read<AuthProvider>().login(loginData);
-  //     final authResponse = context.read<AuthProvider>().loginAuth;
-  //
-  //     if (isSuccess) {
-  //       if (!mounted) return;
-  //
-  //       Navigator.pushReplacement(
-  //         context,
-  //         MaterialPageRoute(builder: (context) => const HomePage()),
-  //       );
-  //
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text(authResponse?.message ?? 'Login Successful')),
-  //       );
-  //     } else {
-  //       // if (!mounted) return;
-  //
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text(authResponse?.message ?? 'Login Failed')),
-  //       );
-  //     }
-  //   }
-  // }
+
+
+  Future<UserCredential> signInWithFacebook() async {
+    // Trigger the sign-in flow
+    final LoginResult loginResult = await FacebookAuth.instance.login();
+
+    // Create a credential from the access token
+    final OAuthCredential facebookAuthCredential =
+        FacebookAuthProvider.credential(
+          '${loginResult.accessToken?.tokenString}',
+        );
+
+    // Once signed in, return the UserCredential
+    return FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
+  }
+
   Future<void> _loginFunction(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -194,18 +323,23 @@ class _LoginScreenState extends State<LoginScreen> {
       password: _passwordController.text.trim(),
     );
 
-    final isSuccess = await context.read<AuthProvider>().login(loginData);
+    final isSuccess = await context.read<ApiAuthProvider>().login(loginData);
 
     /// widget  tree তে আছে কিনা তা এখানে একবার চেক করলেই যথেষ্ট
     if (!context.mounted) return;
 
-    final authResponse = context.read<AuthProvider>().loginAuth;
+    final authResponse = context.read<ApiAuthProvider>().loginAuth;
 
     if (isSuccess) {
       if (!context.mounted) return;
-     await context.read<LocalDbProvider>().setLoginToken(authResponse!.data!.token!);
-     print(authResponse.data!.token!);
-      Navigator.pushReplacement(context, PageTransition(type:PageTransitionType.leftToRight,child:HomePage() ));
+      await context.read<LocalDbProvider>().setLoginToken(
+        authResponse!.data!.token!,
+      );
+      print(authResponse.data!.token!);
+      Navigator.pushReplacement(
+        context,
+        PageTransition(type: PageTransitionType.leftToRight, child: HomePage()),
+      );
 
       _showSnackBar(authResponse.message ?? 'Login Successful');
     } else {

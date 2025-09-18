@@ -26,7 +26,7 @@ class _ForgetPasswordSendOtpVerificationScreenState extends State<ForgetPassword
   void initState() {
     super.initState();
 
-    context.read<AuthProvider>().startResendOTP(() {
+    context.read<ApiAuthProvider>().startResendOTP(() {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Timer finished! You can resend OTP now."),
@@ -46,7 +46,7 @@ class _ForgetPasswordSendOtpVerificationScreenState extends State<ForgetPassword
         centerTitle: true,
       ),
 
-      body: Consumer<AuthProvider>(
+      body: Consumer<ApiAuthProvider>(
         builder: (context, authProvider, child) => Padding(
           padding: const EdgeInsets.all(20.0),
           child: Form(
@@ -166,7 +166,7 @@ class _ForgetPasswordSendOtpVerificationScreenState extends State<ForgetPassword
     );
   }
 
-  validation(String? value, AuthProvider authProvider) {
+  validation(String? value, ApiAuthProvider authProvider) {
     if (value == null || value.trim().isEmpty) {
       return authProvider.forgetResendOtpResponse?.errors?.email?.first ??
           'Email is required';
@@ -185,15 +185,15 @@ class _ForgetPasswordSendOtpVerificationScreenState extends State<ForgetPassword
   }
 
   void _resendOtp( BuildContext context) async {
-    final success =  await context.read<AuthProvider>().forgetPasswordResendOtp(widget.email.toString());
+    final success =  await context.read<ApiAuthProvider>().forgetPasswordResendOtp(widget.email.toString());
     if(!context.mounted) return;
 
-    final response = context.read<AuthProvider>().forgetResendOtpResponse;
+    final response = context.read<ApiAuthProvider>().forgetResendOtpResponse;
     if(success){
       if(!context.mounted) return;
-      if(context.read<AuthProvider>().isResend){
+      if(context.read<ApiAuthProvider>().isResend){
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response?.message ?? 'successfully send OTP')));
-      context.read<AuthProvider>().startResendOTP(() {
+      context.read<ApiAuthProvider>().startResendOTP(() {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Timer finished! You can resend OTP now."),

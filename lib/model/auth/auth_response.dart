@@ -30,14 +30,14 @@ class AuthResponse {
 }
 
 class Data {
-  User? user;
+  Users? user;
   String? token;
   String? resetToken;
 
   Data({this.user, this.token , this.resetToken});
 
   Data.fromJson(Map<String, dynamic> json) {
-    user = json['user'] != null ? new User.fromJson(json['user']) : null;
+    user = json['user'] != null ? new Users.fromJson(json['user']) : null;
     token = json['token'];
     resetToken = json['reset_token'];
   }
@@ -53,7 +53,7 @@ class Data {
   }
 }
 
-class User {
+class Users {
   int? id;
   String? name;
   String? email;
@@ -66,7 +66,7 @@ class User {
   bool? emailVerify;
   String? createdAt;
 
-  User({
+  Users({
     this.id,
     this.name,
     this.email,
@@ -80,7 +80,7 @@ class User {
     this.createdAt,
   });
 
-  User.fromJson(Map<String, dynamic> json) {
+  Users.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     email = json['email'];

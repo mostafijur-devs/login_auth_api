@@ -28,7 +28,7 @@ class _ForgetPasswordOtpSendScreenState extends State<ForgetPasswordOtpSendScree
         centerTitle: true,
       ),
 
-      body:Consumer<AuthProvider>(
+      body:Consumer<ApiAuthProvider>(
         builder: (context, authProvider, child) =>Padding(
           padding: const EdgeInsets.all(20.0),
           child: Form(
@@ -66,10 +66,10 @@ class _ForgetPasswordOtpSendScreenState extends State<ForgetPasswordOtpSendScree
 
    _save(BuildContext context) async{
      if(_formKey.currentState!.validate()){
-       final success = await context.read<AuthProvider>().forgetPasswordResendOtp(_emailController.text.trim());
+       final success = await context.read<ApiAuthProvider>().forgetPasswordResendOtp(_emailController.text.trim());
 
        if(!context.mounted) return;
-       final  provider =  context.read<AuthProvider>().forgetResendOtpResponse;
+       final  provider =  context.read<ApiAuthProvider>().forgetResendOtpResponse;
        if(success){
          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text( provider?.message ?? 'Success')));
          Navigator.push(context, MaterialPageRoute(builder: (context) =>ForgetPasswordSendOtpVerificationScreen(email: _emailController.text.trim(),) ,));
@@ -83,7 +83,7 @@ class _ForgetPasswordOtpSendScreenState extends State<ForgetPasswordOtpSendScree
    }
 
    //  validation(String? value, AuthProvider authProvider) {
-   String? validation(String? value, AuthProvider authProvider) {
+   String? validation(String? value, ApiAuthProvider authProvider) {
      if (value == null || value.trim().isEmpty) {
        return 'Email is required';
      }

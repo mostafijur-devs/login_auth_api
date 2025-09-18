@@ -1,23 +1,17 @@
 import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:login_auth_model/model/auth/verify_otp/verify_otp_model.dart';
-import 'package:login_auth_model/repository/local_repository/share_preferance_repository.dart';
 import 'package:login_auth_model/services/auth_service/auth_services.dart';
-import 'package:login_auth_model/services/local_service/share_preference.dart';
 import '../../model/auth/auth_response.dart';
 import '../../model/auth/login_auth_model/login_model.dart';
 import '../../model/auth/registration_auth_model/registration_model.dart';
 import '../../model/auth/reset_password_model/reset_password_model.dart';
 import '../../repository/auth_repository.dart';
 
-class AuthProvider extends ChangeNotifier {
+class ApiAuthProvider extends ChangeNotifier {
   /// Repository call
   final AuthRepository _authRepository = AuthServices();
-
-
   final int _resendTimeCount = 10;
-
 
   /// login auth API response models
   AuthResponse? _loginAuth;
@@ -98,6 +92,8 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+
+
   void startResendOTP( VoidCallback? onTimerFinish ){
     _isResend = false;
     notifyListeners();
@@ -120,6 +116,7 @@ class AuthProvider extends ChangeNotifier {
     },);
 
   }
+
   @override
   void dispose() {
     super.dispose();

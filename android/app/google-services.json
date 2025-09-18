@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "148341878787",
+    "project_id": "login-work-ffce1",
+    "storage_bucket": "login-work-ffce1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:148341878787:android:db5f44b718ed336aa41e36",
+        "android_client_info": {
+          "package_name": "com.example.login_auth"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrvpR7zyuTpXkXKvtiqHgJ-MrJcdD9AVw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
