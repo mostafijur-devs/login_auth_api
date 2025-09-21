@@ -135,38 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 20),
 
                   /// Registration Button
-                  Row(
-                    // spacing: 30 ,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              type: PageTransitionType.leftToRight,
-                              child: RegistrationScreen(),
-                            ),
-                          );
-                        },
-                        child: const Text('Go to Registration'),
-                      ),
-                      // const SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              type: PageTransitionType.leftToRight,
-                              child: PhoneAuthScreen(),
-                            ),
-                          );
-                        },
-                        child: const Text('Phone login'),
-                      ),
-                      // const SizedBox(height: 20),
-                    ],
-                  ),
+                  SizedBox(height: 20),
 
                   // Consumer<GoogleSignProvider>(
                   //   builder: (context, googleProvider, child) =>
@@ -212,7 +181,27 @@ class _LoginScreenState extends State<LoginScreen> {
                   //   },
                   //   child: const Text('Facebook Login'),
                   // ),
-                  SizedBox(height: 20),
+                  Row(
+                    // spacing: 30 ,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              type: PageTransitionType.leftToRight,
+                              child: RegistrationScreen(),
+                            ),
+                          );
+                        },
+                        child: const Text('Go to Registration'),
+                      ),
+                      // const SizedBox(height: 20),
+
+                      // const SizedBox(height: 20),
+                    ],
+                  ),
                   SizedBox(
                     height: 100,
                     child: Row(
@@ -220,8 +209,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         Expanded(
                           child: Consumer<GoogleSignProvider>(
                             builder: (context, googleProvider, child) =>
-                                 GestureDetector(
-                                    onTap: () async {
+                                TextButton(
+                                  onPressed: () async {
                                       await context
                                           .read<GoogleSignProvider>()
                                           .googleSingIn();
@@ -245,8 +234,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         Expanded(
-                          child: GestureDetector(
-                            onTap: () async {
+                          child: TextButton(
+                            onPressed: () async {
                               await signInWithFacebook().then((value) {
                                 Navigator.push(
                                   context,
@@ -264,17 +253,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         Expanded(
-                          child: GestureDetector(
-                            onTap: () async {
-                              await signInWithFacebook().then((value) {
-                                Navigator.push(
-                                  context,
-                                  PageTransition(
-                                    type: PageTransitionType.leftToRight,
-                                    child: HomePage(),
-                                  ),
-                                );
-                              });
+                          child: TextButton(
+                            onPressed: () async { Navigator.push(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.leftToRight,
+                                child: PhoneAuthScreen(),
+                              ),
+                            );
                             },
                             child: Image.asset(
                               'assets/images/phone.png',
@@ -305,10 +291,13 @@ class _LoginScreenState extends State<LoginScreen> {
     // Trigger the sign-in flow
     final LoginResult loginResult = await FacebookAuth.instance.login();
 
+
+
     // Create a credential from the access token
     final OAuthCredential facebookAuthCredential =
         FacebookAuthProvider.credential(
-          '${loginResult.accessToken?.tokenString}',
+          '${loginResult.accessToken?.tokenString}'
+          ,
         );
 
     // Once signed in, return the UserCredential

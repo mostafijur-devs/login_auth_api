@@ -19,6 +19,7 @@ class SignInGoogleService extends GoogleSingInRepo {
     GoogleSignInAuthentication googleAuth = account.authentication;
     final credential = GoogleAuthProvider.credential(
       idToken: googleAuth.idToken,
+
     );
     final userCadential = await firebaseAuth.signInWithCredential(credential);
     return userCadential.user;

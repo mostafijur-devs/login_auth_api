@@ -6,6 +6,7 @@ import '../../model/auth/auth_response.dart';
 import '../../model/auth/login_auth_model/login_model.dart';
 import '../../model/auth/registration_auth_model/registration_model.dart';
 import '../../model/auth/reset_password_model/reset_password_model.dart';
+import '../../model/auth/user_response.dart';
 import '../../repository/auth_repository.dart';
 
 class ApiAuthProvider extends ChangeNotifier {
@@ -14,6 +15,7 @@ class ApiAuthProvider extends ChangeNotifier {
   final int _resendTimeCount = 10;
 
   /// login auth API response models
+  UserResponse? _userResponse;
   AuthResponse? _loginAuth;
   AuthResponse? _otpVarification;
   AuthResponse? _otpResendVarification;
@@ -41,6 +43,8 @@ class ApiAuthProvider extends ChangeNotifier {
 
   /// login auth API response models getter methods
   AuthResponse? get loginAuth => _loginAuth;
+
+  UserResponse? get userResponse => _userResponse;
 
   AuthResponse? get otpVarification => _otpVarification;
 
@@ -91,6 +95,28 @@ class ApiAuthProvider extends ChangeNotifier {
     _obscureConformPasswordValue = !_obscureConformPasswordValue;
     notifyListeners();
   }
+
+  Future<UserResponse?> getUser(String userToken) async {
+    _isRegistrationLoading = true;
+    notifyListeners();
+
+    try {
+      final result = await _authRepository.getUser(userToken);
+      _userResponse = result;
+
+      // Debugging
+      print("Provider data call: ${result?.status}, ${result?.message}");
+
+      return _userResponse;
+    } catch (error) {
+      debugPrint('REGISTRATION error: $error');
+      return null;
+    } finally {
+      _isRegistrationLoading = false;
+      notifyListeners(); // ✅ UI update
+    }
+  }
+
 
 
 
@@ -167,6 +193,8 @@ class ApiAuthProvider extends ChangeNotifier {
       return false;
     } finally {
       _isRegistrationLoading = false;
+      notifyListeners();
+
     }
   }
 
